@@ -1,0 +1,5 @@
+{
+    "discordToken": "<discord_token>",
+    "ownerID": "<discord_id>",
+    "slack": { "token": "<Slack_bot_Token>", "name": "<Slack_bot_name>" }
+}
