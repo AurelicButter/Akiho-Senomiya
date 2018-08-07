@@ -9,11 +9,12 @@ A Discord/Slack bot that relays messages posted by IFTTT Applet for Google Calen
 
 <b>Introduction:</b>
 
-![IFTTT Applet Display](https://i.imgur.com/pfbl3xM.png "Much of this notification is dependent on the IFTTT applet.")
+![IFTTT Applet Display](https://i.imgur.com/pfbl3xM.png)
 
-The bot will break or not display the information if it is not in that order or style. I was trying to keep the bot small and manageable as it's only job is to listen and transfer notifications. The message is then sent into the Slack DMs where it is processed into a Discord embed and transferred into your shared DMs on Discord for the event notification. Yes, you will get Slack notifications as well, but those can be turned off or ignored.
+Much of this notification system is dependent on the IFTTT applet. The bot will break or not display the information if it is not in the order/style shown above. 
+
+I was trying to keep the bot small and manageable as it's only job is to listen and transfer notifications. The message is then sent into the Slack DMs where it is processed into a Discord embed and transferred into your shared DMs on Discord for the event notification. Yes, you will get Slack notifications as well, but those can be turned off or ignored. 
+
+I won't support any self-hosters of this, however, you are free to try and host it yourself. Good luck if you do!
 
 *Name Origin:* Named after Akiho Senomiya from Robotics;Notes.
-
-<b>Self-hosting:</b>
-I will not support self-hosters. However, you are free to try and host it yourself. Good luck if you do!
