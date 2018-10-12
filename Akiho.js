@@ -6,7 +6,7 @@ const { writeFile } = require("fs");
 const discord = new Client(); const slack = new Slacker(settings.slack);
 
 slack.on('start', function() { console.log("Slack services are online and functional!"); });
-slack.on('error', (err) => { writeFile('./error.txt', err, () => { console.log("Error was found on the Slack side and has been logged.") }); })
+slack.on('error', (err) => { writeFile('./errorSlack.txt', err, () => { console.log("Error was found on the Slack side and has been logged.") }); })
 slack.on('message', function(data) { 
     if (data.type === 'message' && data.attachments) {
         var event = data.attachments[0]; var text = []; var info = [12, 6, 7, 5];
@@ -33,6 +33,7 @@ discord.on("ready", () => {
     discord.user.setActivity("Slack notifications", { type: "LISTENING" }); 
     console.log("Discord services are online and functional!"); 
 });
-discord.on("error", (err) => { writeFile('./error.txt', err, () => { console.log("Error was found on the Discord side and has been logged.") }); });
+discord.on("error", (err) => { writeFile('./errorDiscord.txt', err, () => { console.log("Error was found on the Discord side and has been logged.") }); });
+discord.on("message", (msg) => { if (msg.content.startsWith("Aki, presence")) { msg.client.user.setActivity("Slack notifications", { type: "LISTENING" }) } });
 
 discord.login(settings.discordToken);
