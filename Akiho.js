@@ -6,7 +6,7 @@ const { writeFile } = require("fs");
 const discord = new Client(); const slack = new Slacker(settings.slack);
 
 slack.on('start', function() { console.log("Slack services are online and functional!"); });
-slack.on('error', (err) => { writeFile('./errorSlack.txt', err, () => { console.log("Error was found on the Slack side and has been logged.") }); })
+slack.on('error', (err) => { writeFile("./errorSlack.txt", err, () => { console.log("Error encountered...\n" + err)}); });
 slack.on('message', function(data) { 
     if (data.type === 'message' && data.attachments) {
         var event = data.attachments[0]; var text = []; var info = [12, 6, 7, 5];
@@ -29,11 +29,60 @@ slack.on('message', function(data) {
     } 
 });
 
+slack.on("goodbye", () => { slack.postMessageToChannel("I'm awake!"); })
+
 discord.on("ready", () => { 
     discord.user.setActivity("Slack notifications", { type: "LISTENING" }); 
     console.log("Discord services are online and functional!"); 
 });
-discord.on("error", (err) => { writeFile('./errorDiscord.txt', err, () => { console.log("Error was found on the Discord side and has been logged.") }); });
-discord.on("message", (msg) => { if (msg.content.startsWith("Aki, presence")) { msg.client.user.setActivity("Slack notifications", { type: "LISTENING" }) } });
+discord.on("error", (err) => { 
+    writeFile("./errorDiscord.txt", err, () => { console.log("Error encountered...\n" + err); });
+    writeErr("Discord", err);
+    discord.destroy(); //Destroy client. Bot has crashed.
+    discord.login(settings.discordToken);
+});
+discord.on("message", (msg) => { 
+    if (msg.author.id !== settings.ownerID) { return; }
+    if (!msg.content.startsWith(settings.discordPrefix)) { return; }
+
+    switch(msg.content.substr(settings.discordPrefix.length).trim()) {
+        case "presence":
+            msg.client.user.setActivity("Slack notifications", { type: "LISTENING" });
+            msg.channel.send("Reactivated my presence!");
+            break;
+        case "ping":
+            msg.channel.send("Pong!");
+            break;
+        case "stats":
+            var second = Math.floor(discord.uptime / 1000);
+            var minute = Math.floor(second / 60);
+            var hour = Math.floor(minute / 60);
+            var day = Math.floor(hour / 24);
+
+            var properLabel = function(time, label) {
+                if (time === 0) { return null; }
+                if (time === 1) { return " " + time + " " + label; }
+
+                return " " + time + " " + label + "s";
+            };
+
+            //Time and display correction.
+            time = [properLabel(second % 60, "second"), properLabel(minute % 60, "minute"), properLabel(hour % 24, "hour"), properLabel(day, "day")];
+            time = time.filter(function(t) { return t; });
+            time.reverse();
+
+            msg.channel.send("**__Current Statistics__**\n__Memory Usage:__ " + (process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2) + "MB\n__Run time:__ " + time.join());
+            break;
+        case "reset":
+            msg.channel.send("Okay!");
+            discord.destroy();
+            discord.login(settings.discordToken).then(() => {
+                msg.channel.send("Systems reloaded!");
+            });
+            break;
+        default:
+            return;
+    }
+});
 
 discord.login(settings.discordToken);
